@@ -1,0 +1,32 @@
+paths:
+  raw_transaction: data/raw/train_transaction.csv
+  raw_identity: data/raw/train_identity.csv
+  processed: data/processed
+  artifacts: data/artifacts
+data:
+  sample_frac: 1.0
+  random_state: 42
+  train_frac: 0.70
+  valid_frac: 0.15
+model:
+  n_estimators: 800
+  learning_rate: 0.03
+  num_leaves: 64
+  max_depth: -1
+  colsample_bytree: 0.85
+  reg_alpha: 0.5
+  reg_lambda: 2.0
+  early_stopping_rounds: 80
+hybrid:
+  fraud_weight: 0.60
+  anomaly_weight: 0.20
+  context_weight: 0.20
+  threshold: 0.50
+autoencoder:
+  latent_dim: 32
+  hidden1: 256
+  hidden2: 128
+  epochs: 25
+  batch_size: 1024
+  learning_rate: 0.001
+  max_train_rows: 250000

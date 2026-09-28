@@ -1,0 +1,1 @@
+{"project":"X-TAD","dataset":"IEEE-CIS Fraud Detection","novelty":"Temporal Explanation Consensus Score (TECS)","components":["temporal leakage-safe features","LightGBM","PyTorch autoencoder","hybrid risk","SHAP","TECS","Spark","Streamlit"]}

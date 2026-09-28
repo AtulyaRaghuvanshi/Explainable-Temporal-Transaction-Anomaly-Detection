@@ -1,0 +1,4 @@
+from pyspark.sql import SparkSession,Window
+from pyspark.sql import functions as F
+import argparse
+p=argparse.ArgumentParser();p.add_argument('--input',required=True);p.add_argument('--output',required=True);a=p.parse_args();spark=SparkSession.builder.appName('XTADBehavioralFeatures').getOrCreate();df=spark.read.option('header',True).option('inferSchema',True).csv(a.input).orderBy('TransactionDT');w=Window.partitionBy('card1').orderBy('TransactionDT');hist=w.rowsBetween(Window.unboundedPreceding,-1);df=df.withColumn('amount_log',F.log1p('TransactionAmt')).withColumn('card_hist_count',F.count('*').over(hist)).withColumn('card_hist_amount_mean',F.avg('TransactionAmt').over(hist)).withColumn('card_prev_time',F.lag('TransactionDT').over(w)).withColumn('card_seconds_since_prev',F.col('TransactionDT')-F.col('card_prev_time'));df.write.mode('overwrite').parquet(a.output);spark.stop()

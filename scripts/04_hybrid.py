@@ -1,0 +1,6 @@
+import sys,json,numpy as np,pandas as pd
+from pathlib import Path
+root=Path(__file__).resolve().parents[1];sys.path.insert(0,str(root))
+from src.config import load_config
+from src.metrics import binary_metrics,at_k
+cfg=load_config();p=root/cfg['paths']['processed'];a=root/cfg['paths']['artifacts'];te=pd.read_parquet(p/'test.parquet');l=pd.read_parquet(a/'lightgbm_test_scores.parquet');ae=pd.read_parquet(a/'autoencoder_test_scores.parquet');d=te[['TransactionID','isFraud']].merge(l,on='TransactionID').merge(ae,on='TransactionID');cc=[c for c in te.columns if c.endswith('_amount_z') or c.endswith('_hist_count') or c.endswith('_seconds_since_prev')];raw=te[cc].abs().replace([np.inf,-np.inf],np.nan).fillna(0).mean(axis=1) if cc else np.zeros(len(te));d['context_score']=pd.Series(raw).rank(pct=True).values;d['hybrid_score']=cfg['hybrid']['fraud_weight']*d.fraud_probability+cfg['hybrid']['anomaly_weight']*d.anomaly_score+cfg['hybrid']['context_weight']*d.context_score;met=binary_metrics(d.isFraud,d.hybrid_score,cfg['hybrid']['threshold']);met['at_k']=at_k(d.isFraud,d.hybrid_score);print(json.dumps(met,indent=2));d.to_parquet(a/'hybrid_test_scores.parquet',index=False);json.dump(met,open(a/'hybrid_metrics.json','w'),indent=2)
