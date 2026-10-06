@@ -30,3 +30,13 @@ autoencoder:
   batch_size: 1024
   learning_rate: 0.001
   max_train_rows: 250000
+bigdata:
+  hdfs_uri: hdfs://namenode:8020
+  spark_master: spark://spark-master:7077
+  hive_jdbc: jdbc:hive2://localhost:10000/
+  namenode_container: xtad-namenode
+  spark_container: xtad-spark-master
+  hive_container: xtad-hiveserver2
+  driver_memory: 768m
+  executor_memory: 1g
+  export_dir: data/hdfs_export/features

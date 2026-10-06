@@ -4,3 +4,4 @@ data/artifacts/*
 .venv/
 __pycache__/
 *.pyc
+data/hdfs_export/*

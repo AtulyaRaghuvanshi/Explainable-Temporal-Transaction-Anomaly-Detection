@@ -1,0 +1,61 @@
+# Big data stack for X-TAD: HDFS (storage) + Spark (processing) + Hive (SQL-on-Hadoop)
+# Start:  docker compose up -d      UIs: HDFS http://localhost:9870  Spark http://localhost:8080  Hive http://localhost:10002
+services:
+  namenode:
+    image: apache/hadoop:3.3.6
+    container_name: xtad-namenode
+    hostname: namenode
+    command: ["hdfs", "namenode"]
+    env_file: ./docker/hadoop.env
+    environment:
+      ENSURE_NAMENODE_DIR: /tmp/hadoop-hadoop/dfs/name
+      HADOOP_HEAPSIZE_MAX: 512m
+    ports: ["9870:9870"]
+    volumes:
+      - ./data:/data
+
+  datanode:
+    image: apache/hadoop:3.3.6
+    container_name: xtad-datanode
+    hostname: datanode
+    command: ["hdfs", "datanode"]
+    env_file: ./docker/hadoop.env
+    environment:
+      HADOOP_HEAPSIZE_MAX: 512m
+    depends_on: [namenode]
+
+  spark-master:
+    image: apache/spark:3.5.3
+    container_name: xtad-spark-master
+    hostname: spark-master
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.master.Master"]
+    ports: ["8080:8080", "7077:7077"]
+    volumes: ["./spark:/opt/xtad/spark:ro"]
+    depends_on: [namenode]
+
+  spark-worker:
+    image: apache/spark:3.5.3
+    container_name: xtad-spark-worker
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.worker.Worker", "spark://spark-master:7077"]
+    environment:
+      SPARK_WORKER_CORES: "4"
+      SPARK_WORKER_MEMORY: 1536m
+    depends_on: [spark-master]
+
+  hiveserver2:
+    image: apache/hive:4.0.0
+    container_name: xtad-hiveserver2
+    hostname: hiveserver2
+    environment:
+      SERVICE_NAME: hiveserver2
+      HADOOP_HEAPSIZE: "1024"
+    ports: ["10000:10000", "10002:10002"]
+    volumes:
+      - ./docker/hive/hive-site.xml:/opt/hive/conf/hive-site.xml:ro
+      - ./docker/hive/core-site.xml:/opt/hadoop/etc/hadoop/core-site.xml:ro
+      - ./sql:/opt/xtad/sql:ro
+      - hive-metastore:/opt/hive/data
+    depends_on: [namenode, datanode]
+
+volumes:
+  hive-metastore:

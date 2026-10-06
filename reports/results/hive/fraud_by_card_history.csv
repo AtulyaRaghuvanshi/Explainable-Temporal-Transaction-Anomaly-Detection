@@ -1,0 +1,5 @@
+card_history,txns,fraud_rate_pct
+1: first seen,13553,2.568
+2: 1-4 prior,32355,2.488
+3: 5-19 prior,57537,2.644
+4: 20+ prior,487095,3.693

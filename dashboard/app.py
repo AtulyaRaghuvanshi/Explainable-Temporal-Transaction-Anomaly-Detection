@@ -13,3 +13,11 @@ if len(r):
  if ep.exists():
   ex=pd.DataFrame(json.loads(ep.read_text()));e=ex[ex.TransactionID==tid]
   if len(e):st.write('### Top SHAP features');st.json(json.loads(e.iloc[0].top_features))
+hv=a/'hive'
+if hv.exists() and list(hv.glob('*.csv')):
+ st.divider();st.subheader('Hive analytics (SQL-on-Hadoop over Spark output on HDFS)')
+ for f in sorted(hv.glob('*.csv')):
+  q=pd.read_csv(f)
+  with st.expander(f.stem.replace('_',' '),expanded=False):
+   st.dataframe(q,use_container_width=True)
+   if 'fraud_rate_pct' in q:st.bar_chart(q.set_index(q.columns[0])['fraud_rate_pct'])

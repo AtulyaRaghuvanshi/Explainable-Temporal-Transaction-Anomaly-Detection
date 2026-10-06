@@ -10,3 +10,7 @@ def load_raw(transaction_path,identity_path=None):
 def chronological_split(df,train_frac=.70,valid_frac=.15):
     df=df.sort_values('TransactionDT').reset_index(drop=True);n=len(df);a=int(n*train_frac);b=int(n*(train_frac+valid_frac))
     return df.iloc[:a].copy(),df.iloc[a:b].copy(),df.iloc[b:].copy()
+def load_spark_features(path):
+    """Read the feature table produced by spark/behavioral_features.py (exported from HDFS)."""
+    df=pd.read_parquet(ROOT/path)
+    return df.sort_values(['TransactionDT','TransactionID']).reset_index(drop=True)

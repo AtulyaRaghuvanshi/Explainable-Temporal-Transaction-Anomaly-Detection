@@ -25,11 +25,13 @@ def historical(df):
             df[f'{a}_{b}_hist_count']=key.groupby(key,sort=False).cumcount().astype('float32')
     return df
 
-def prepare(train,valid,test):
-    train,valid,test=basic(train),basic(valid),basic(test)
-    all_df=pd.concat([train.assign(_split=0),valid.assign(_split=1),test.assign(_split=2)],ignore_index=True).sort_values('TransactionDT')
-    all_df=historical(all_df)
-    train=all_df[all_df._split==0].drop(columns='_split');valid=all_df[all_df._split==1].drop(columns='_split');test=all_df[all_df._split==2].drop(columns='_split')
+def prepare(train,valid,test,precomputed=False):
+    # precomputed=True: basic + historical features were already built by the Spark job (HDFS)
+    if not precomputed:
+        train,valid,test=basic(train),basic(valid),basic(test)
+        all_df=pd.concat([train.assign(_split=0),valid.assign(_split=1),test.assign(_split=2)],ignore_index=True).sort_values('TransactionDT')
+        all_df=historical(all_df)
+        train=all_df[all_df._split==0].drop(columns='_split');valid=all_df[all_df._split==1].drop(columns='_split');test=all_df[all_df._split==2].drop(columns='_split')
     cats=train.select_dtypes(include=['object','string','category']).columns
     for c in cats:
         s=train[c].astype('string').fillna('__NA__');mp=s.value_counts(normalize=True)
