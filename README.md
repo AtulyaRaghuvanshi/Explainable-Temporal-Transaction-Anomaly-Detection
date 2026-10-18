@@ -24,9 +24,12 @@ raw CSVs --load--> HDFS /xtad/raw --Spark (window functions)--> HDFS /xtad/featu
 ```
 Requires Docker Desktop (about 4 GB RAM). Spark and Hive run inside the containers, so no local Java/Hadoop is needed.
 ```bash
-python scripts/make_synthetic_data.py          # only if you do not have the Kaggle files in data/raw/
-python scripts/00_bigdata_pipeline.py          # up -> load -> spark -> hive -> export  (or pass individual steps)
-python scripts/01_prepare.py --from-hdfs       # use the Spark-built features instead of pandas
+python scripts/make_synthetic_data.py          
+# only if you do not have the Kaggle files in data/raw/
+python scripts/00_bigdata_pipeline.py up load spark hive export        
+# up -> load -> spark -> hive -> export  (or pass individual steps)
+python scripts/01_prepare.py --from-hdfs       
+# use the Spark-built features instead of pandas
 ```
 UIs: HDFS http://localhost:9870, Spark http://localhost:8080, HiveServer2 http://localhost:10002. Stop with `docker compose down`.
 Hive result tables are written to `data/artifacts/hive/` and shown in the dashboard.

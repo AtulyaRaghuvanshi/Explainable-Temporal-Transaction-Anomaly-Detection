@@ -5,3 +5,4 @@ data/artifacts/*
 __pycache__/
 *.pyc
 data/hdfs_export/*
+reports/TEAM_CONTRIBUTIONS.md
