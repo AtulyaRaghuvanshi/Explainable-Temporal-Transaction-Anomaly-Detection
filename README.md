@@ -52,3 +52,9 @@ TECS is a proposed metric that compares local SHAP explanations for the same tra
 
 ## Leakage prevention
 Data are chronologically sorted. Historical counts, means and previous-transaction features use only prior observations. Train/validation/test are chronological. The public Kaggle competition test labels are not used for supervised evaluation.
+
+## Contributors
+- Atulya Raghuvanshi - 2023BCS0083
+- Anushka Kapur - 2023BCS0149
+- Anush Bundel - 2023BCS0005
+
